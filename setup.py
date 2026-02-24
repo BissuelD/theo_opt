@@ -7,7 +7,7 @@ This setup.py reads configuration from pyproject.toml and passes it to setuptool
 
 import tomllib
 from pathlib import Path
-from setuptools import setup, find_packages
+from setuptools import setup
 
 # Read pyproject.toml
 pyproject_path = Path(__file__).parent / "pyproject.toml"
@@ -19,14 +19,27 @@ project_config = pyproject_data.get("project", {})
 
 # Prepare setup() arguments from pyproject.toml
 setup_kwargs = {
-    "packages": find_packages(exclude=["tests", "*.tests", "tests.*", "*.tests.*"]),
+    "packages": [],
 }
 
-# Install top-level scripts as entry scripts (keeps current flat layout)
+# Install everything into bin (non-standard, but matches requested layout)
 root_dir = Path(__file__).parent
+
 script_paths = sorted(p for p in root_dir.glob("*.py") if p.name != "setup.py")
+empy_paths = sorted(p for p in (root_dir / "EMpy").rglob("*.py"))
+stuff_paths = sorted(p for p in (root_dir / "stuff").rglob("*.py"))
+
+data_files = []
 if script_paths:
-    setup_kwargs["scripts"] = [str(p) for p in script_paths]
+    data_files.append(("bin", [str(p) for p in script_paths]))
+if empy_paths:
+    data_files.append(("bin/EMpy", [str(p) for p in empy_paths if p.parent.name == "EMpy"]))
+    data_files.append(("bin/EMpy/modesolvers", [str(p) for p in empy_paths if p.parent.name == "modesolvers"]))
+if stuff_paths:
+    data_files.append(("bin/stuff", [str(p) for p in stuff_paths]))
+
+if data_files:
+    setup_kwargs["data_files"] = data_files
 
 # Extract and format author information
 authors = project_config.get("authors", [])
