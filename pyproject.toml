@@ -1,0 +1,47 @@
+[project]
+name = "theo-opt"
+version = "1.0.0"
+description = "Supplemental interactive figures to the textbook Lectures in Theoretical Optics by Falk Lederer and Stefan Skupin."
+keywords = [
+    "optics",
+    "physics",
+    "theoretical physics",
+    "interactive figures",
+    "electromagnetism",
+]
+# license = "GPL-3.0"
+license = "MIT"
+license-files = ["LICENSE.txt"]
+authors = [
+    { name = "Stefan Skupin", email = "stefan.skupin@univ-lyon1.fr" },
+    { name = "Falk Lederer", email = "falk.lederer@uni-jena.de" },
+]
+maintainers = [
+    { name = "Stefan Skupin", email = "stefan.skupin@univ-lyon1.fr" },
+    { name = "Dylan Bissuel", email = "dylan.bissuel@univ-lyon1.fr" },
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.2",
+    "scipy>=1.17.1",
+    "setuptools>=82.0.0",
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Physics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/sskupin/theo_opt"
+Documentation = "https://github.com/sskupin/theo_opt"
+Source = "https://github.com/sskupin/theo_opt"
+Tracker = "https://github.com/sskupin/theo_opt/issues"
+
+[project.optional-dependencies]
+dev = [
+    "spyder"
+]
