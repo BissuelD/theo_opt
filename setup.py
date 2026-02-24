@@ -22,6 +22,12 @@ setup_kwargs = {
     "packages": find_packages(exclude=["tests", "*.tests", "tests.*", "*.tests.*"]),
 }
 
+# Install top-level scripts as entry scripts (keeps current flat layout)
+root_dir = Path(__file__).parent
+script_paths = sorted(p for p in root_dir.glob("*.py") if p.name != "setup.py")
+if script_paths:
+    setup_kwargs["scripts"] = [str(p) for p in script_paths]
+
 # Extract and format author information
 authors = project_config.get("authors", [])
 if authors:
