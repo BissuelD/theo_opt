@@ -9,7 +9,6 @@ keywords = [
     "interactive figures",
     "electromagnetism",
 ]
-# license = "GPL-3.0"
 license = "MIT"
 license-files = ["LICENSE.txt"]
 authors = [
