@@ -25,6 +25,7 @@ dependencies = [
     "matplotlib",
     "numpy",
     "setuptools",
+    "sympy",
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
