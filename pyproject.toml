@@ -9,7 +9,7 @@ keywords = [
     "interactive figures",
     "electromagnetism",
 ]
-license = "MIT"
+# license = "MIT"
 license-files = ["LICENSE.txt"]
 authors = [
     { name = "Stefan Skupin", email = "stefan.skupin@univ-lyon1.fr" },
