@@ -1,0 +1,15 @@
+services:
+  theo-opt:
+    build:
+      context: ..
+      dockerfile: containers/Dockerfile
+    image: theo_opt_interactive:latest
+    container_name: theo_opt_interactive
+    environment:
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: "1"
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    network_mode: host
+    stdin_open: true
+    tty: true
