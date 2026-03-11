@@ -1,0 +1,129 @@
+Bootstrap: localimage
+From: /gnu/store/yy4rhdjfv550br65w2wkaij36hval0zv-python-python-scipy-python-numpy-squashfs-pack.gz.squashfs
+
+
+%files
+    /home/dbissuel/Documents/ILM/MMCI/Stefan/theo_opt/*.py /opt/theo_opt/
+    /home/dbissuel/Documents/ILM/MMCI/Stefan/theo_opt/stuff /opt/theo_opt/stuff
+    /home/dbissuel/Documents/ILM/MMCI/Stefan/theo_opt/man /opt/theo_opt/man
+    /home/dbissuel/Documents/ILM/MMCI/Stefan/theo_opt/EMpy /opt/theo_opt/EMpy
+
+%post
+    # Dummy files to suppress warnings about missing /etc/passwd and /etc/group
+    touch /etc/passwd
+    touch /etc/group
+
+
+    # Replace strings in .py files to make the code work wherever it's launched from
+    python3 << 'EOF'
+
+import os
+import glob
+
+for filepath in glob.glob("/opt/theo_opt/*.py"):
+    with open(filepath, 'r') as f:
+        content = f.read()
+    
+    # Replace the relative path string
+    new_content = content.replace("./stuff", "/opt/theo_opt/stuff")
+
+    # Also replace paths in create_launch_button calls and in show_manual calls
+    lines = new_content.splitlines()
+    for i, line in enumerate(lines):
+
+        if "create_launch_button" in line:
+            parts = line.split("'")
+            for j, part in enumerate(parts):
+                if part.endswith(".py"):
+                    parts[j] = "/opt/theo_opt/" + part
+            lines[i] = "'".join(parts)
+
+        if "show_manual" in line:
+            parts = line.split("\"")
+            for j, part in enumerate(parts):
+                if part.startswith("man"):
+                    parts[j] = "/opt/theo_opt/" + part
+            lines[i] = "\"".join(parts)
+
+    new_content = "\n".join(lines)
+    
+    # Write back if changed
+    if new_content != content:
+        with open(filepath, 'w') as f:
+            f.write(new_content)
+        print(f"Updated: {filepath}")
+    else:
+        print(f"No changes: {filepath}")
+
+# Special handling for stuff/gui_stuff.py -> we dont want /opt/theo_opt/ on the buttons labels
+gui_stuff_path = "/opt/theo_opt/stuff/gui_stuff.py"
+if os.path.exists(gui_stuff_path):
+    with open(gui_stuff_path, 'r') as f:
+        content = f.read()
+    
+    # Remove the "/opt/theo_opt/" prefix from the text argument (stored in the filename variable)
+    new_content = content.replace('text=filename', 'text=filename.replace("/opt/theo_opt/", "")')
+    
+    if new_content != content:
+        with open(gui_stuff_path, 'w') as f:
+            f.write(new_content)
+        print(f"Updated: {gui_stuff_path}")
+    else:
+        print(f"No changes: {gui_stuff_path}")
+EOF
+
+%environment
+    # Add environment variables if needed (e.g., for display forwarding)
+
+%runscript
+    python3 /opt/theo_opt/launcher.py
+
+
+%help
+    ========================================================================
+    Theoretical Optics - Interactive Figures Container
+    ========================================================================
+
+    DESCRIPTION:
+        This container provides supplemental interactive figures for the textbook:
+        "Lectures in Theoretical Optics" by Falk Lederer and Stefan Skupin
+        (Springer, 2026)
+
+    USAGE:
+        Basic usage:
+            $ apptainer run <this-image>
+
+        With display forwarding:
+            $ apptainer run --env DISPLAY=$DISPLAY <this-image>
+
+        Interactive shell:
+            $ apptainer shell <this-image>
+
+    NOTES:
+        - The main entry point is /opt/theo_opt/launcher.py
+        - Source files are located in /opt/theo_opt/
+        - This is a GUI application requiring X11 display forwarding
+        - Only basic Linux commands are available in the container
+
+    EXAMPLE SCRIPT:
+        Create a convenience script:
+
+        cat > run-theo-opt.sh << 'EOF'
+        #!/bin/bash
+        apptainer run --env DISPLAY=$DISPLAY <path-to-image>
+        EOF
+        chmod +x run-theo-opt.sh
+
+    MORE INFO:
+        Run "apptainer inspect <this-image>" for container metadata
+
+
+%labels
+    org.opencontainers.image.title="Theoretical Optics Interactive Figures"
+    org.opencontainers.image.description="Supplemental interactive figures for 'Lectures in Theoretical Optics' by Falk Lederer and Stefan Skupin (Springer, 2026)"
+    org.opencontainers.image.version="1.0.0"
+    org.opencontainers.image.authors="Stefan Skupin <stefan.skupin@univ-lyon1.fr>, Falk Lederer <falk.lederer@uni-jena.de>"
+    org.opencontainers.image.licenses="MIT"
+    org.opencontainers.image.source="https://github.com/sskupin/theo_opt"
+    org.opencontainers.image.url="https://link.springer.com/book/9783662726334"
+    maintainer="Dylan Bissuel <dylan.bissuel@univ-lyon1.fr>"
